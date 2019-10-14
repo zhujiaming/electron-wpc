@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>窗口1</title>
+</head>
+
+<body>
+  <h1>Hello World!</h1>
+
+  <span id="tag_rec"></span>
+  <br>
+  <input type="text" name="fname" placeholder="input message" id="et_send" />
+  <button type="button" onclick="send()">send</button>
+
+  <br>
+
+</body>
+<script>
+  const { WinConnBridgeHandle } = require('../dist');
+  const PARAMS = require('./cfg');
+  const newWinBradge = new WinConnBridgeHandle(PARAMS.CONN_ID, PARAMS.TAG_WIN2);
+  newWinBradge.on('sendToIndex1', (event, args) => {
+    document.getElementById('tag_rec').innerText = 'receive: ' + args;
+  })
+
+  function send() {
+    const text = document.getElementById('et_send').value;
+    newWinBradge.send('sendToIndex2', text ? text : Date.now().toString());
+  }
+
+</script>
+
+</html>

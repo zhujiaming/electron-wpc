@@ -1,0 +1,30 @@
+{
+  "name": "electron-wpc",
+  "version": "1.0.1",
+  "description": "electron window process communication bridge tool",
+  "main": "./test/test.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run build & electron ."
+  },
+  "keywords": [
+    "electron",
+    "electron-tool",
+    "ipc",
+    "typescript"
+  ],
+  "author": "zhujm",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhujiaming/electron-wpc.git"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "electron": "^4.2.0",
+    "mocha": "^6.2.0",
+    "typescript": "^3.6.3"
+  },
+  "homepage":"https://zhujm.top/2019/09/04/201909041838/",
+  "dependencies": {}
+}
