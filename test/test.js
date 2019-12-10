@@ -1,10 +1,10 @@
 const { app, BrowserWindow } = require('electron')
-const {WinConnBradge} = require('../dist')
+const {WinConnBridge,registProviderWindow,unRegistProviderWindow} = require('../dist')
 // 保持对win1dow对象的全局引用，如果不这么做的话，当JavaScript对象被
 // 垃圾回收的时候，win1dow对象将会自动的关闭
-let win1;
-let win2;
-let winBradge;
+let win1,win2,win3;
+let winConnBridge;
+const PARAMS = require('./cfg');
 
 function createwindow() {
 
@@ -35,15 +35,17 @@ function createwindow() {
         // 取消引用 win1dow 对象，如果你的应用支持多窗口的话，
         // 通常会把多个 win1dow 对象存放在一个数组里面，
         // 与此同时，你应该删除相应的元素。
-        winBradge&&winBradge.unBind();
+        winConnBridge&&winConnBridge.unBindConn();
+        unRegistProviderWindow(PARAMS.TAG_WIN_PROVIDER)
         win1 = null
     })
 
+    registProviderWindow(win1,PARAMS.TAG_WIN_PROVIDER);//win1作为Provider
     //------------------------
     // 创建浏览器窗口。
     win2 = new BrowserWindow({
         x: sw / 2,
-        y: 200,
+        y: 230,
         width,
         height,
         webPreferences: {
@@ -52,7 +54,7 @@ function createwindow() {
     })
 
     // 加载index.html文件
-    win2.loadFile('./test/index2.html')
+    win2.loadFile('./test/index3.html')
 
     // 打开开发者工具
     // win2.webContents.openDevTools()
@@ -62,11 +64,37 @@ function createwindow() {
         // 取消引用 win1dow 对象，如果你的应用支持多窗口的话，
         // 通常会把多个 win1dow 对象存放在一个数组里面，
         // 与此同时，你应该删除相应的元素。
-        winBradge&&winBradge.unBind();
+        winConnBridge&&winConnBridge.unBindConn();
         win2 = null
     })
 
-    initWinConnBradge();
+    // 创建浏览器窗口。
+    win3 = new BrowserWindow({
+        x: sw / 2,
+        y: 250,
+        width,
+        height,
+        webPreferences: {
+            nodeIntegration: true
+        }
+    })
+
+    // 加载index.html文件
+    win3.loadFile('./test/index2.html')
+
+    // 打开开发者工具
+    // win3.webContents.openDevTools()
+
+    // 当 win1dow 被关闭，这个事件会被触发。
+    win3.on('closed', () => {
+        // 取消引用 win1dow 对象，如果你的应用支持多窗口的话，
+        // 通常会把多个 win1dow 对象存放在一个数组里面，
+        // 与此同时，你应该删除相应的元素。
+        winConnBridge&&winConnBridge.unBindConn();
+        win3 = null
+    })
+
+    initWinConnBridge();
 }
 
 // Electron 会在初始化后并准备
@@ -93,8 +121,7 @@ app.on('activate', () => {
     }
 })
 
-function initWinConnBradge() {
-    const PARAMS = require('./cfg');
-    winBradge = new WinConnBradge();
-    winBradge.bind(win1, PARAMS.TAG_WIN1, win2, PARAMS.TAG_WIN2, PARAMS.CONN_ID);//bind两个窗口
+function initWinConnBridge() {
+    winConnBridge = new WinConnBridge();
+    winConnBridge.bindConn(win1, PARAMS.TAG_WIN1, win2, PARAMS.TAG_WIN2, PARAMS.CONN_ID);//bind两个窗口
 }

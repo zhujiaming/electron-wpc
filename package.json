@@ -1,6 +1,6 @@
 {
   "name": "electron-wpc",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "electron window process communication bridge tool",
   "main": "./test/test.js",
   "scripts": {
@@ -10,6 +10,7 @@
   "keywords": [
     "electron",
     "electron-tool",
+    "tools",
     "ipc",
     "typescript"
   ],
@@ -25,6 +26,6 @@
     "mocha": "^6.2.0",
     "typescript": "^3.6.3"
   },
-  "homepage":"https://zhujm.top/2019/09/04/201909041838/",
+  "homepage": "https://zhujm.top/2019/09/04/201909041838/",
   "dependencies": {}
 }

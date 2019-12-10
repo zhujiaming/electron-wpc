@@ -18,17 +18,41 @@
 
 </body>
 <script>
-  const { WinConnBridgeHandle } = require('../dist');
+  const { WinConnBridgeHandle, ProviderDelegate } = require('../dist');
+  const { ipcRenderer } = require('electron');
   const PARAMS = require('./cfg');
-  const newWinBradge = new WinConnBridgeHandle(PARAMS.CONN_ID, PARAMS.TAG_WIN2);
-  newWinBradge.on('sendToIndex1', (event, args) => {
+
+  // 基于两个窗口的双向通信
+  const newWinBridge = new WinConnBridgeHandle(PARAMS.CONN_ID, PARAMS.TAG_WIN2);
+  newWinBridge.on('sendToIndex1', (event, args) => {
     document.getElementById('tag_rec').innerText = 'receive: ' + args;
   })
 
   function send() {
     const text = document.getElementById('et_send').value;
-    newWinBradge.send('sendToIndex2', text ? text : Date.now().toString());
+    newWinBridge.send('sendToIndex2', text ? text : Date.now().toString());
   }
+
+  //------------------------------------------------------------------------------
+
+  //生产者实现监听并生产
+  function listenCmd() {
+    const providerDelegate = new ProviderDelegate();
+    providerDelegate.on('update_db', (reply, args) => {
+      console.log('receive update cmd,start process ==>', args);
+      setTimeout(() => {
+        const replyArgs = { result: true };
+        console.log('process update task finish,reply ==>', replyArgs);
+        reply(replyArgs);
+      }, 1000);
+    });
+
+    providerDelegate.on('getTime',(reply,args)=>{
+      reply({time:Date.now()})
+    })
+  }
+
+  listenCmd();
 
 </script>
 

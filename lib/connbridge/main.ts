@@ -1,9 +1,9 @@
-import { BrowserWindow, ipcMain } from 'electron';
+import { BrowserWindow, ipcMain, webContents } from 'electron';
 /**
  * 窗口间通讯，main进程注册
  */
 /* eslint-disable */
-export default class WinConnBradge {
+export default class WinConnBridge {
     private id!: string;
 
     private winA!: BrowserWindow | null;
@@ -15,7 +15,7 @@ export default class WinConnBradge {
     private isUnbind: boolean = false;
 
     constructor() {
-        this.id = 'WinConnBradgeId' + new Date().toString();
+        this.id = 'WinConnBridgeId' + new Date().toString();
     }
 
     /**
@@ -26,7 +26,7 @@ export default class WinConnBradge {
      * @param winTagB 窗口B的唯一标识
      * @param id AB之间通讯的id
      */
-    bind(
+    bindConn(
         winA: BrowserWindow,
         winTagA: string,
         WinB: BrowserWindow,
@@ -38,25 +38,32 @@ export default class WinConnBradge {
         this.winTagA = winTagA;
         this.winTagB = winTagB;
         this.id = id;
-        this.init();
-    }
-
-    unBind() {
-        this.isUnbind = true;
-        this.winA = null;
-        this.winB = null;
-        ipcMain.removeAllListeners(this.id);
-    }
-
-    init() {
         if (this.winA != null) {
-            ipcMain.on(this.id, (event: string, message: any) => {
+            /**
+             * interface Event extends GlobalEvent {
+                preventDefault: () => void;
+                sender: WebContents;
+                returnValue: any;
+                ctrlKey?: boolean;
+                metaKey?: boolean;
+                shiftKey?: boolean;
+                altKey?: boolean;
+                }
+             */
+            ipcMain.on(this.id, (event: any, message: any) => {
                 if (this.isUnbind) {
                     return;
                 }
                 this.handleConn(message);
             });
         }
+    }
+
+    unBindConn() {
+        this.isUnbind = true;
+        this.winA = null;
+        this.winB = null;
+        ipcMain.removeAllListeners(this.id);
     }
 
     private checkWinEnable(win?: BrowserWindow) {
@@ -69,7 +76,7 @@ export default class WinConnBradge {
      *
      */
     private handleConn(arg: any) {
-        console.log('hand conn mesg:',arg);
+        console.log('hand conn mesg:', arg);
         const key: string = arg.key;
         let keyargs = key.split('#');
 
