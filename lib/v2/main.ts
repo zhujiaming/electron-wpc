@@ -1,6 +1,6 @@
 import { BrowserWindow, ipcMain, webContents } from 'electron';
 /**
- * 窗口间通讯，main进程注册
+ * main进程注册ProviderWindow
  */
 /* eslint-disable */
 export function registProviderWindow(providerWin: BrowserWindow, tag: string) {
