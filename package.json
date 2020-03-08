@@ -1,6 +1,6 @@
 {
   "name": "electron-wpc",
-  "version": "1.5.0",
+  "version": "1.6.1",
   "description": "electron window process communication bridge tool",
   "main": "./example/main.js",
   "scripts": {

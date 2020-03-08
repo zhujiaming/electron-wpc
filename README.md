@@ -22,7 +22,7 @@ npm install electron-wpc
 
 ## 运行示例
 
-> 示例中的执行过程及结果在控制台中打印。
+> 示例中的执行过程及结果在窗口控制台中打印。
 
 ```powershell
 npm install
