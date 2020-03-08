@@ -42,7 +42,7 @@ npm run example
         const TAG = 'tag_for_win_provider';
         //...
         registProviderWindow(winProvider, TAG);
-        //...
+        //...销毁
         winProvider.on('close',()=>{
            unRegistProviderWindow(TAG); 
         })
@@ -101,7 +101,7 @@ npm run example
         resolve(args);
     });
 
-    //...
+    //...销毁
     app.on('close',()=>{
         unRegistBrodcastTransfer("broadcast_key1","broadcast_key2"); 
     })
@@ -109,21 +109,24 @@ npm run example
 
 2. renderer进程发送广播至其他所有renderer进程
 ```javascript
-    ipcRenderer.send(PARAMS.BROADCAST_EXAMPLE_KEY_2, { id: 666 });
-    // （可选）监听广播发送的结果。
-    ipcRenderer.once(PARAMS.BROADCAST_EXAMPLE_KEY_2 + "-reply", (e, a) => {
+    ipcRenderer.send("broadcast_key1", { id: 666 });
+
+    ipcRenderer.send("broadcast_key2", 'abcd');
+    // （可选）监听广播发送的结果。(需要在原key的基础上添加-reply作为新key)
+    ipcRenderer.once("broadcast_key2" + "-reply", (e, a) => {
       console.log('=>send broadcast result:', a);
     });
+
 ```
 
 3. renderer进程注册广播接收者
 ```javascript
     function exampleBroadcastReceiver() {
-        ipcRenderer.on(PARAMS.BROADCAST_EXAMPLE_KEY_1, (event, args) => {
+        ipcRenderer.on('broadcast_key1', (event, args) => {
             console.log('接收到其他窗口的广播1:', args);
         });
 
-        ipcRenderer.on(PARAMS.BROADCAST_EXAMPLE_KEY_2, (event, args) => {
+        ipcRenderer.on('broadcast_key2', (event, args) => {
             console.log('接收到其他窗口的广播2:', args);
         });
     }
