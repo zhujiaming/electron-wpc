@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>控制窗口</title>
+</head>
+
+<body>
+  <h2>Resolver Example</h2>
+  <h2>BroadCastSender Example</h2>
+
+  <br>
+  Resolver窗口通信例子
+  <!-- <input type="text" name="p1" placeholder="输入小于10的数字" id="et_p1" />
+  <button type="button" onclick="sendCaculateCommond()">send input content to remote provider window for check</button>
+  <div id="check_res"></div>
+  <hr /> -->
+  <button type="button" onclick="sendUpdateUserTableCommond()">send update_user_table cmd to remote provider
+    window</button>
+  <!-- <div id="provider_reply"></div> -->
+  <hr />
+  <button type="button" onclick="sendGetTimestampCommond()">send getTime cmd to remote provider window</button>
+  <!-- <div id="provider_reply2"></div> -->
+
+  <hr />
+  <button type="button" onclick="sendTimeoutExample()">send timeout example</button>
+  <hr />
+  <button type="button" onclick="sendCatchErrorExample()">send catch error example</button>
+
+  <hr>
+  消息的多窗口广播例子
+  <br>
+  <button type="button" onclick="sendBroadcastExampleA()">send broadcast example 1</button>
+  <button type="button" onclick="sendBroadcastExampleB()">send broadcast example 2</button>
+</body>
+
+<!-- ***************************************************************** -->
+
+<script>
+  const { WPCResolverDelegate } = require('../dist');
+  const PARAMS = require('./cfg');
+
+  //实例化一个WPCResolverDelegate对象，并绑定至目标provider window
+  const resolverDelegate = new WPCResolverDelegate(PARAMS.TAG_FOR_PROVIDER_WINDOW);
+
+  // 发送消息给provider窗口使其计算并返回结果
+  // function sendCaculateCommond() {
+  //   const p1 = document.getElementById('et_p1');
+
+  //   console.log('send input content to remote provider window for check', { p1 });
+
+  //   resolverDelegate.send('calculate_task', { p1 }).then(result => {
+  //     console.log('来自Provider 窗口的检查结果：', result);
+  //     document.getElementById('check_res').innerText = "来自remote的检查结果：" + result;
+  //   }).catch(error => {
+  //     console.error('来自Provider 窗口的错误结果：', error);
+  //     document.getElementById('check_res').innerText = "检查错误：" + error;
+  //   });
+
+  // }
+
+  // 模拟远端数据库操作
+  function sendUpdateUserTableCommond() {
+    console.log('->send update_user_table to provider window.');
+    resolverDelegate.send('update_user_table', { id: '1234', name: 'zhujm' }).then((args) => {
+      console.log('<-receive update_user_table result from provider window ==>', args);
+    }).catch(e => {
+      console.error('<-receive update_user_table result error!', e);
+    });
+
+  }
+
+  //异步实现：
+  async function sendGetTimestampCommond() {
+    console.log('->send update_user_table to provider window.');
+    try {
+      const res = await resolverDelegate.send('getTimestamp');
+      console.log('<-receive getTimestamp result from provider window:', res);
+    } catch (e) {
+      console.error('<-receive getTimestamp error from provider window!', e);
+    }
+  }
+
+  //消息超时模拟
+  function sendTimeoutExample() {
+    console.log('->send a un regist cmd to provider window.');
+    resolverDelegate.setTimeOut(6 * 1000);//default is 5s.
+    resolverDelegate.send('xxx')
+      .then(res => { })
+      .catch(e => {
+        console.error('<-receive error msg:', e)
+      });
+  }
+
+  //provider执行异常的监听
+  function sendCatchErrorExample() {
+    console.log('->send catch error example.');
+
+    resolverDelegate.send('exampleReject')
+      .catch(error => {
+        console.error('<-from provider window:', error);
+      });
+  }
+
+
+  //***********************广播发送者实现***********************************
+
+  const { ipcRenderer } = require('electron');
+
+  function sendBroadcastExampleA() {
+    ipcRenderer.send(PARAMS.BROADCAST_EXAMPLE_KEY_1, '1234');
+    ipcRenderer.once(PARAMS.BROADCAST_EXAMPLE_KEY_1 + "-reply", (e, a) => {
+      console.log('=>send broadcast result:', a);
+    });
+  }
+
+  function sendBroadcastExampleB() {
+    ipcRenderer.send(PARAMS.BROADCAST_EXAMPLE_KEY_2, { id: 666 });
+    ipcRenderer.once(PARAMS.BROADCAST_EXAMPLE_KEY_2 + "-reply", (e, a) => {
+      console.log('=>send broadcast result:', a);
+    });
+  }
+</script>
+
+</html>

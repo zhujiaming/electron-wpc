@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+
+<body>
+  <h2>BroadCastReceiver Window</h2>
+
+</body>
+<!-- ***************************************************************** -->
+<script>
+  const { WPCProviderDelegate } = require('../dist');
+  const { ipcRenderer } = require('electron');
+  const PARAMS = require('./cfg');
+
+  //********************* 广播接收者的例子 **********************************
+  function exampleBroadcastReceiver() {
+    ipcRenderer.on(PARAMS.BROADCAST_EXAMPLE_KEY_1, (event, args) => {
+      console.log('接收到其他窗口的广播1:', args);
+    });
+
+    ipcRenderer.on(PARAMS.BROADCAST_EXAMPLE_KEY_2, (event, args) => {
+      console.log('接收到其他窗口的广播2:', args);
+    });
+  }
+
+  exampleBroadcastReceiver();
+
+</script>
+
+</html>
