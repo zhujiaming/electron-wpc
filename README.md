@@ -31,7 +31,7 @@ npm install electron-wpc
    >  c.支持广播前在 main 进程中对数据加工。\
    >  c.集成简单。
 
-   ![3](./img/2.png)
+   ![3](./img/3.png)
 
 ## 使用示例
 
