@@ -2,7 +2,7 @@
   "name": "electron-wpc",
   "version": "2.0.0",
   "description": "electron window process communication bridge tool",
-  "main": "./example/main.js",
+  "main": "./dist/index.js",
   "scripts": {
     "build": "tsc",
     "example": "npm run build && electron ."

@@ -1,7 +1,7 @@
 ## electron-wpc
 
 该工具库基于 EventEmitter+Promise，实现 electron 窗口与窗口间、窗口与主进程间、窗口广播消息等便捷化通信。
-
+> 如果觉得有帮助欢迎点个⭐，同时也欢迎提出issue。[electron-wpc >>](https://github.com/zhujiaming/electron-wpc)
 ## 安装
 
 ```powershell
@@ -191,6 +191,3 @@ function exampleBroadcastReceiver() {
   });
 }
 ```
-
-## last
-如果觉得有帮助欢迎丢个⭐，同时也欢迎提出issue。
