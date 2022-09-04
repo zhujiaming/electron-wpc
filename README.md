@@ -1,26 +1,35 @@
 ## electron-wpc
 
-electron 窗口渲染的内容逻辑运行在renderer进程，窗口管理与应用管理逻辑运行在main进程，窗口之间的渲染内容的通讯无法直接进行，在多窗口应用中尤为突出，需要通过main进程进行中转，该工具通过封装窗口间通信过程，降低与业务耦合度，便捷化实现Electron窗口间通讯。
+该工具库基于 EventEmitter+Promise，实现electron 窗口与窗口间、窗口与主进程间、窗口广播消息等便捷化通信。
 
 ## 功能
-1. 双窗口间(renderer进程)消息发送及处理结果的获取；
+1. EventEmitter+Promise方式实现渲染进程与主进程间的消息通信
+
+    ![1](./img/1.png)
+
+2. EventEmitter+Promise 方式实现两个窗口间的renderer进程间的消息通信；
    > a. 支持多对一的半双工消息通信。\
     b. 基于EventEmitter+Promise特性实现窗口间消息的发送及结果主动返回；\
     c. 消息处理者（Provider Renderer）可主动向发送者（Resolver Renderer）抛出异常。\
     d. 支持消息的超时处理。\
     e. 集成简单。
-2. 多窗口间(renderer进程)广播通信；
+
+    ![2](./img/2.png)
+
+3. EventEmitter+Promise 方式实现多窗口广播通信；
    > a.支持一对多的单工消息通信。\
     b.支持广播成功或失败的消息回调。\
     c.支持广播前在main进程中对数据加工。\
     c.集成简单。
+
+    ![3](./img/2.png)
 
 ## 安装
 ```powershell
 npm install electron-wpc
 ```
 
-## 运行示例
+## 示例
 
 > 示例中的执行过程及结果在窗口控制台中打印。
 
@@ -31,7 +40,47 @@ npm run example
 
 ## 集成与应用
 
-### 双窗口间(renderer进程)消息发送及处理结果的获取:
+### ① 渲染进程与主进程通过 EventEmitter+Promise 方式进行消息通信
+
+1. main进程中，待BrowserWindow初始化完成，使用WPCMainRendererConn对象注册监听者
+```javascript
+    const { WPCMainRendererConn } = require('electron-wpc');
+    var mainRendererConn = new WPCMainRendererConn();
+    // 绑定窗口
+    mainRendererConn.bindWindow(win2);
+    // 注册事件
+    mainRendererConn.on("event_getTime", (resolve, rejcet, arg) => {
+    console.log("mainRendererConn arg:", arg);
+    try{
+        setTimeout(() => {
+            resolve(`现在时间：${Date.now()}`);
+        }, 1000);
+    }catch(e){
+        reject(e);
+    }
+  });
+```
+2. renderer进程中
+
+```javascript
+    var rendererConnect = new WPCMainRendererConn();
+    rendererConnect.setTimeOut(3000); //设置超时时间（默认5s)
+    function sendToMain() {
+      console.log("send to main process");
+      rendererConnect
+        .send("event_getTime", "getTimeArg")
+        .then((retFromMain) => {
+          console.log("main process result:", retFromMain);
+        })
+        .catch((e) => {
+          console.error("main process error:", e);
+        });
+    }
+```
+
+
+
+### ② 双窗口间(renderer进程)消息发送及处理结果的获取:
 
 1. 在main进程中注册Provider Window（作为内容提供者），并绑定TAG。(单个窗口可根据作用类型不同设置不同的tag)
 
@@ -85,7 +134,7 @@ npm run example
       });
 
 ```
-### 多窗口间(renderer进程)广播通信
+### ③ 广播通信
 
 1. 在main进程注册广播通信事件id
 
