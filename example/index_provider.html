@@ -1,67 +1,68 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="UTF-8" />
+    <title></title>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <title></title>
-</head>
+  <body>
+    <h2>Provider Window</h2>
+    <br />
+    <h2>BroadCastReceiver Window</h2>
+    <br />
+    <h2>WATCH CONSOLE ==></h2>
+  </body>
+  <!-- ***************************************************************** -->
+  <script>
+    const { WPCProviderDelegate } = require("../dist");
+    const { ipcRenderer } = require("electron");
+    const PARAMS = require("./cfg");
 
-<body>
-  <h2>Provider Window</h2>
-  <h2>BroadCastReceiver Window</h2>
+    /// ************************* Provider 例子****************************************
+    /**
+     * 监听其他窗口发来的消息并处理，并回复结果
+     */
+    function examplelistenCommand() {
+      //实例化一个provider对象
+      const providerDelegate = new WPCProviderDelegate();
 
-</body>
-<!-- ***************************************************************** -->
-<script>
-  const { WPCProviderDelegate } = require('../dist');
-  const { ipcRenderer } = require('electron');
-  const PARAMS = require('./cfg');
+      //更新用户表的任务
+      providerDelegate.on("update_user_table", (resolve, reject, args) => {
+        console.log("receive update_user_table command,processing ==>", args);
+        //模拟耗时操作
+        setTimeout(() => {
+          const replyArgs = { result: `update user id:${args.id} success!` };
+          console.log(
+            "process update_user_table task finish,reply ==>",
+            replyArgs
+          );
+          resolve(replyArgs);
+        }, 1000);
+      });
 
-  /// ************************* Provider 例子****************************************
-  /**
-   * 监听其他窗口发来的消息并处理，并回复结果
-   */
-  function examplelistenCommand() {
-    //实例化一个provider对象
-    const providerDelegate = new WPCProviderDelegate();
+      //获取当前时间戳
+      providerDelegate.on("getTimestamp", (resolve, reject, args) => {
+        console.log("receive getTimestamp command");
+        resolve({ time: Date.now() });
+      });
 
-    //更新用户表的任务
-    providerDelegate.on('update_user_table', (resolve, reject, args) => {
-      console.log('receive update_user_table command,processing ==>', args);
-      //模拟耗时操作
-      setTimeout(() => {
-        const replyArgs = { result: `update user id:${args.id} success!` };
-        console.log('process update_user_table task finish,reply ==>', replyArgs);
-        resolve(replyArgs);
-      }, 1000);
-    });
+      providerDelegate.on("exampleReject", (resolve, reject, args) => {
+        reject("example reject."); //resolver will catch an error which is reject param.
+      });
+    }
 
-    //获取当前时间戳
-    providerDelegate.on('getTimestamp', (resolve, reject, args) => {
-      console.log('receive getTimestamp command');
-      resolve({ time: Date.now() });
-    });
+    //********************* 广播接收者的例子 **********************************
+    function exampleBroadcastReceiver() {
+      ipcRenderer.on(PARAMS.BROADCAST_EXAMPLE_KEY_1, (event, args) => {
+        console.log("接收到其他窗口的广播1:", args);
+      });
 
-    providerDelegate.on('exampleReject', (resolve, reject, args) => {
-      reject('example reject.');//resolver will catch an error which is reject param.
-    });
-  }
+      ipcRenderer.on(PARAMS.BROADCAST_EXAMPLE_KEY_2, (event, args) => {
+        console.log("接收到其他窗口的广播2:", args);
+      });
+    }
 
-  //********************* 广播接收者的例子 **********************************
-  function exampleBroadcastReceiver() {
-    ipcRenderer.on(PARAMS.BROADCAST_EXAMPLE_KEY_1, (event, args) => {
-      console.log('接收到其他窗口的广播1:', args);
-    });
-
-    ipcRenderer.on(PARAMS.BROADCAST_EXAMPLE_KEY_2, (event, args) => {
-      console.log('接收到其他窗口的广播2:', args);
-    });
-  }
-
-
-  examplelistenCommand();
-  exampleBroadcastReceiver();
-
-</script>
-
+    examplelistenCommand();
+    exampleBroadcastReceiver();
+  </script>
 </html>

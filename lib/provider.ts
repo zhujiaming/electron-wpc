@@ -13,7 +13,20 @@ interface Handler {
     (resolve: Function, reject: Function, args: any): void;
 }
 
+
 export default class WindowMsgProvider {
+
+     test(){
+        try {
+            throw new Error('手动抛出异常');
+        } catch (error) {
+            console.log(error);
+        } finally {
+            console.log('执行了finally语句块');
+        }
+    }
+    
+
     on(channel: string, handler: Handler) {
         ipcRenderer.on(channel, (event: any, commondArgs: any) => {
             const commondId = commondArgs.id;
@@ -35,10 +48,11 @@ export default class WindowMsgProvider {
                         },
                         commondArgs.args
                     );
-            } catch (e) {
+            } catch (error) {
+                const e = error as Error;
                 console.error('handle commond error;', e);
                 commondArgs['_reply_type'] = 'error';
-                var errmsg = e & e.message;
+                var errmsg = e.message;
                 commondArgs['_reply'] = errmsg ? errmsg : "unkown error,check provider renderer process's log.";
                 ipcRenderer.send(commondId, commondArgs);
             }
