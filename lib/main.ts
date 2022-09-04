@@ -43,7 +43,7 @@ export function registProviderWindow(
             ipcMain.once(commondId, callback(commondId));
             const targetWebContents = webContents.fromId(webContentsId);
             if (!targetWebContents) {
-                console.warn('provider webcontents is null!', tagId);
+                //console.warn('provider webcontents is null!', tagId);
             }
             targetWebContents && targetWebContents.send(commondKey, args);
         });

@@ -24,11 +24,11 @@ export function registBrodcastTransfer(key: string, funcCookArgs: CookTask | nul
                     try {
                         webContentsItem.send(params.key, params.args);
                     } catch (e) {
-                        console.error('send broadcast msg error.', e);
+                        //console.error('send broadcast msg error.', e);
                         returnValue = -1;
                     }
                 } else {
-                    console.error('broadcast key is null.');
+                    //console.error('broadcast key is null.');
                     returnValue = -2;
                 }
             }

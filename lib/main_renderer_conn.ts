@@ -51,7 +51,7 @@ export default class WPCMainRendererConn {
         handler &&
           handler(
             (reply_args: any) => {
-              console.log("resolve run:", reply_args);
+              //console.log("resolve run:", reply_args);
               replyArgsWrapper.code = 0;
               replyArgsWrapper.data = reply_args;
               this.win?.webContents.send(
@@ -60,7 +60,7 @@ export default class WPCMainRendererConn {
               );
             },
             (error: any) => {
-              console.log("reject run:", error);
+              //console.log("reject run:", error);
               replyArgsWrapper.code = -1;
               replyArgsWrapper.data = error;
               this.win?.webContents.send(

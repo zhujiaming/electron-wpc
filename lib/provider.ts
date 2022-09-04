@@ -20,9 +20,9 @@ export default class WindowMsgProvider {
         try {
             throw new Error('手动抛出异常');
         } catch (error) {
-            console.log(error);
+            //console.log(error);
         } finally {
-            console.log('执行了finally语句块');
+            //console.log('执行了finally语句块');
         }
     }
     
@@ -30,18 +30,18 @@ export default class WindowMsgProvider {
     on(channel: string, handler: Handler) {
         ipcRenderer.on(channel, (event: any, commondArgs: any) => {
             const commondId = commondArgs.id;
-            // console.log('commondArgs:', commondArgs);
+            // //console.log('commondArgs:', commondArgs);
             try {
                 handler &&
                     handler(
                         (reply_args: any) => {
-                            console.log('resolve run:', reply_args);
+                            //console.log('resolve run:', reply_args);
                             commondArgs['_reply_type'] = 'nomal';
                             commondArgs['_reply'] = reply_args;
                             ipcRenderer.send(commondId, commondArgs);
                         },
                         (error: any) => {
-                            console.log('reject run:', error);
+                            //console.log('reject run:', error);
                             commondArgs['_reply_type'] = 'error';
                             commondArgs['_reply'] = error;
                             ipcRenderer.send(commondId, commondArgs);
@@ -50,7 +50,7 @@ export default class WindowMsgProvider {
                     );
             } catch (error) {
                 const e = error as Error;
-                console.error('handle commond error;', e);
+                //console.error('handle commond error;', e);
                 commondArgs['_reply_type'] = 'error';
                 var errmsg = e.message;
                 commondArgs['_reply'] = errmsg ? errmsg : "unkown error,check provider renderer process's log.";
